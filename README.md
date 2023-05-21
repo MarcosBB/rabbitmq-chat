@@ -5,10 +5,14 @@ Este é um projeto de estudos de mensageria que tem como objetivo desenvolver ca
 Crie na raiz do projeto o arquivo `.env` e introduza nele as informações necessárias a conexão com o servidor do rabbitMQ, caso use as informações padrão ficará assim:
 
 ```env
-RABBITMQ_HOST=localhost
-RABBITMQ_PORT=5672
-RABBITMQ_USERNAME=guest
-RABBITMQ_PASSWORD=guest
+# RabbitMQ
+RABBITMQ_HOST=
+RABBITMQ_PORT=
+RABBITMQ_USERNAME=
+RABBITMQ_PASSWORD=
+
+# Database
+DATABASE_NAME=
 ```
 
 ## Execução

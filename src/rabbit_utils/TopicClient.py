@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 
-class ClientChat:
+class TopicClient:
     def __init__(self, username, queue_name, routing_key, channel):
         self.username = username
         self.queue_name = queue_name

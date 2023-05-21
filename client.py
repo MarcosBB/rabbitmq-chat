@@ -1,7 +1,7 @@
-from rabbit_utils import RabbitHandler
+from src.rabbit_utils import RabbitHandler
 from dotenv import load_dotenv
-from rabbit_utils import RabbitHandler, ClientChat
-from cli_interface import CliInterface
+from src.rabbit_utils import RabbitHandler, TopicClient
+from src.CliInterface import CliInterface
 
 load_dotenv()
 
@@ -19,7 +19,7 @@ queue_name = f"group.adoradores_de_carros.{username}"
 # loop de envio e recebimento de mensagens
 server = RabbitHandler()
 channel = server.channel
-chat = ClientChat(username, queue_name, routing_key, channel)
+chat = TopicClient(username, queue_name, routing_key, channel)
 cli = CliInterface()
 
 def updatemessage(clilist):
