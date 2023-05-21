@@ -17,5 +17,5 @@ DATABASE_NAME=
 
 ## Execução
 1. Executar `pip install -r requirements.txt` para instalar os requisitos na sua máquina
-2. Rode o arquivo `api.py` para criar o grupo e a fila de mensagens do client.
-3. Rodar o arquivo `client.py` para iniciar o client (Lembrando que até agora só da pra fazer uma coisa de cada vez, ler ou receber mensagens).
+2. Rode o arquivo `api.py` para a api começar a rodar.
+3. Em outro terminal rode o arquivo `client.py` para iniciar o client.
