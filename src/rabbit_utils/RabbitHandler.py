@@ -11,7 +11,6 @@ class RabbitHandler:
         self.__password__ = os.getenv("RABBITMQ_PASSWORD")
         self.connection = self.__create_connection()
         self.channel = self.connection.channel()
-        self.__prevents_unexpected_closures()
         
     def __create_connection(self):
         connection_parameters = pika.ConnectionParameters(
@@ -27,11 +26,3 @@ class RabbitHandler:
     
     def close_connection(self):
         self.connection.close()
-
-    def __prevents_unexpected_closures(self):
-        def signal_handler(signal, frame):
-            self.close_connection()
-            sys.exit(0)
-
-        signal.signal(signal.SIGINT, signal_handler)
-        sys.exitfunc = self.close_connection
