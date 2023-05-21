@@ -19,11 +19,14 @@ queue_name = "group.adoradores_de_carros.joao"
 server = RabbitHandler()
 channel = server.channel
 chat = ClientChat(username, queue_name, routing_key, channel)
-
-# Não recebe mensagens ao mesmo tempo que envia
-# Para testar comente a linha abaixo e descomente o while True e vice-versa
-# chat.receive_message()
+messages = []
 while True:
+    msg = chat.get_one_message()
+    if msg != '':
+        messages.append(msg)
+    print("mensagens recebidas:\n")
+    for msg in messages:
+        print(msg)
     message = input("Digite sua mensagem: ")
+    if message == '': break
     chat.send_message(message)
-
