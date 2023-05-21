@@ -6,14 +6,16 @@ from rabbit_utils import Group, RabbitHandler
 load_dotenv()
 
 class ClientChat:
-    def __init__(self, username, queue_name):
-        self.queue_name = queue_name
+    def __init__(self, username, queue_name, routing_key, channel):
         self.username = username
+        self.queue_name = queue_name
+        self.routing_key = routing_key
+        self.channel = channel
 
     def send_message(self, message):
-        channel.basic_publish(
-            exchange=group_1_name, 
-            routing_key=group_1_name, 
+        self.channel.basic_publish(
+            exchange="groups", 
+            routing_key=self.routing_key, 
             body=self.__get_json_payload(message),
         )
 
@@ -27,19 +29,20 @@ class ClientChat:
         def callback(ch, method, properties, body):
             print(f"Mensagem recebida: {body}")
 
-        channel.basic_consume(
+        self.channel.basic_consume(
             queue=self.queue_name, 
             on_message_callback=callback, 
             auto_ack=True
         )
-        channel.start_consuming()
+        self.channel.start_consuming()
 
 
 # username = input("Digite seu nome de usuário: ")
 username = "joao"
 
 # recebe lista de groupos que pode se inscrever
-group_1_name = "group.adoradores_de_carros"
+exchange_name = "groups"
+routing_key = "group.adoradores_de_carros"
 
 # se inscreve em um grupo
 queue_name = "group.adoradores_de_carros.joao"
@@ -48,7 +51,7 @@ queue_name = "group.adoradores_de_carros.joao"
 server = RabbitHandler()
 channel = server.channel
 
-chat = ClientChat(username, queue_name)
+chat = ClientChat(username, queue_name, routing_key, channel)
 chat.receive_message()
 
 # while True:
