@@ -7,16 +7,3 @@ class Group:
             exchange="groups", 
             exchange_type='topic'
         )
-        
-    def create_queue(self, username):
-        queue_name = f"{self.routing_key}.{username}"
-
-        self.channel.queue_declare(queue=queue_name)
-        self.channel.queue_bind(
-            exchange="groups", 
-            queue=queue_name, 
-            routing_key=self.routing_key,
-        )
-
-        return queue_name
-    

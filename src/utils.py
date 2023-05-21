@@ -30,8 +30,8 @@ def group_db_to_dict(group):
     return {
         "id": group[0],
         "name": group[1],
-        "exchange": group[3],
-        "routing_key": group[2],
+        "exchange": group[2],
+        "routing_key": group[3],
     }
 
 def group_db_to_list(groups):

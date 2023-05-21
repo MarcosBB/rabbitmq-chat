@@ -27,9 +27,36 @@ class GroupResource(Resource):
         conn.close()
 
         return group_db_to_list(groups), 200
+    
+    
+class GroupSubscribeResource(Resource):
+    def post(self, id):
+        username = request.json["username"]
+        # import pdb; pdb.set_trace()
+        
+        server = RabbitHandler()
+        channel = server.channel
+        conn = sqlite3.connect(database)
+        cursor = conn.cursor()
+        
+        cursor.execute(f"SELECT * FROM groups WHERE id = {id}")
+        group = cursor.fetchone()
+        group = group_db_to_dict(group)
+
+        queue_name = f"group.{group['routing_key']}.{username}"
+        
+        channel.queue_declare(queue=queue_name)
+        channel.queue_bind(
+            exchange=group['exchange'], 
+            queue=queue_name, 
+            routing_key=group['routing_key'],
+        )
+        conn.close()
+        return {"queue": queue_name}, 200
 
 
 api.add_resource(GroupResource, '/groups/')
+api.add_resource(GroupSubscribeResource, '/groups/<int:id>/subscribe/')
 
 if __name__ == '__main__':
     conn = sqlite3.connect(database)
