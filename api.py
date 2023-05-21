@@ -1,7 +1,6 @@
 import sys
 from dotenv import load_dotenv
 from rabbit_utils import Group, RabbitHandler
-from utils import prevents_unexpected_closures
 
 load_dotenv()
 
@@ -14,11 +13,6 @@ try:
 except Exception as e:
     print("Não foi possível conectar ao servidor RABBITMQ!")
     sys.exit(1)
-
-
-# Prevenir fechamento inesperado do terminal
-prevents_unexpected_closures(server)
-
 
 # Criar grupo
 try:
