@@ -27,6 +27,7 @@ except Exception as e:
 # Criar fila
 try:
     queue_name = grupo_sobre_carros.create_queue("joao")
+    queue_name = grupo_sobre_carros.create_queue("jose")
     print(f"fila '{queue_name}' criada com sucesso!")
 except Exception as e:
     print("Não foi possível criar a fila!")
