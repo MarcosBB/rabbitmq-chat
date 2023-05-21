@@ -1,5 +1,6 @@
 class Group:
     def __init__(self, name, channel):
+        self.name = name
         self.channel = channel
         self.group_name = name
         self.exchange_name = f"group.{name.replace(' ', '_')}"
@@ -9,13 +10,14 @@ class Group:
         )
         
     def create_queue(self, username):
-        queue_name = f"{username}|{self.exchange_name}"
-        queue = self.channel.queue_declare(queue=queue_name)
+        queue_name = f"{self.exchange_name}.{username}"
+
+        self.channel.queue_declare(queue=queue_name)
         self.channel.queue_bind(
             exchange=self.exchange_name, 
             queue=queue_name, 
-            routing_key=self.group_name
+            routing_key=self.exchange_name,
         )
 
-        return queue
+        return queue_name
     

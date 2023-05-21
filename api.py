@@ -1,6 +1,7 @@
+import sys
 from dotenv import load_dotenv
 from rabbit_utils import Group, RabbitHandler
-import sys
+from utils import prevents_unexpected_closures
 
 load_dotenv()
 
@@ -12,23 +13,33 @@ try:
     print("Conectado ao servidor RABBITMQ com sucesso!")
 except Exception as e:
     print("Não foi possível conectar ao servidor RABBITMQ!")
-    print(e)
     sys.exit(1)
+
+
+# Prevenir fechamento inesperado do terminal
+prevents_unexpected_closures(server)
 
 
 # Criar grupo
-grupo_sobre_carros = Group("adoradores de carros", channel)
-print(f"Grupo {grupo_sobre_carros.group_name} criado com sucesso!")
+try:
+    grupo_sobre_carros = Group("adoradores de carros", channel)
+    print(f"Grupo '{grupo_sobre_carros.group_name}' criado com sucesso!")
+except Exception as e:
+    print("Não foi possível criar o grupo!")
+    server.close_connection()
+    sys.exit(1)
 
-queue = grupo_sobre_carros.create_queue("joao")
-print("fila criada com sucesso!")
+
+# Criar fila
+try:
+    queue_name = grupo_sobre_carros.create_queue("joao")
+    print(f"fila '{queue_name}' criada com sucesso!")
+except Exception as e:
+    print("Não foi possível criar a fila!")
+    server.close_connection()
+    sys.exit(1)
 
 
 # Fechar conexão com o servidor RabbitMQ
-try:
-    server.close_connection()
-    print("Conexão com o servidor RABBITMQ fechada com sucesso!")
-except Exception as e:
-    print("Não foi possível fechar a conexão com o servidor RABBITMQ!")
-    print(e)
-    sys.exit(1)
+server.close_connection()
+print("Conexão com o servidor RABBITMQ fechada com sucesso!")
