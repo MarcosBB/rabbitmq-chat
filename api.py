@@ -1,40 +1,51 @@
-import sys
+from flask import Flask, request
+from flask_restful import Resource, Api
+
+import os
 from dotenv import load_dotenv
-from rabbit_utils import Group, RabbitHandler
+from src.rabbit_utils import Group, RabbitHandler
+import sqlite3
+from src.utils import (
+    create_basic_groups,
+    group_db_to_dict,
+    group_db_to_list,
+)
 
 load_dotenv()
+app = Flask(__name__)
+api = Api(app)
+database = f"{os.getenv('DATABASE_NAME')}.db"
 
 
-# Conectar ao servidor RabbitMQ
-try:
-    server = RabbitHandler()
-    channel = server.channel
-    print("Conectado ao servidor RABBITMQ com sucesso!")
-except Exception as e:
-    print("Não foi possível conectar ao servidor RABBITMQ!")
-    sys.exit(1)
+class GroupResource(Resource):
+    def get(self):
+        conn = sqlite3.connect(database)
+        cursor = conn.cursor()
 
-# Criar grupo
-try:
-    grupo_sobre_carros = Group("adoradores de carros", channel)
-    print(f"Grupo '{grupo_sobre_carros.group_name}' criado com sucesso!")
-except Exception as e:
-    print("Não foi possível criar o grupo!")
-    server.close_connection()
-    sys.exit(1)
+        cursor.execute("SELECT * FROM groups")
+        groups = cursor.fetchall()
+        conn.close()
+
+        return group_db_to_list(groups), 200
 
 
-# Criar fila
-try:
-    queue_name = grupo_sobre_carros.create_queue("joao")
-    queue_name = grupo_sobre_carros.create_queue("jose")
-    print(f"fila '{queue_name}' criada com sucesso!")
-except Exception as e:
-    print("Não foi possível criar a fila!")
-    server.close_connection()
-    sys.exit(1)
+api.add_resource(GroupResource, '/groups/')
 
+if __name__ == '__main__':
+    conn = sqlite3.connect(database)
+    cursor = conn.cursor()
 
-# Fechar conexão com o servidor RabbitMQ
-server.close_connection()
-print("Conexão com o servidor RABBITMQ fechada com sucesso!")
+    cursor.execute(
+        '''CREATE TABLE IF NOT EXISTS groups (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name VARCHAR(100) NOT NULL,
+            exchange VARCHAR(100) NOT NULL,
+            routing_key VARCHAR(100) NOT NULL UNIQUE
+        )'''
+    )
+    create_basic_groups(cursor)
+
+    conn.commit()
+    conn.close()
+
+    app.run(debug=True)
