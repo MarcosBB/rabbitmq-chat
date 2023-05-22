@@ -22,3 +22,6 @@ DATABASE_NAME=
 2. Rode o arquivo `api.py` para a api começar a rodar.
 3. Em outro terminal rode o arquivo `client.py` para iniciar o client.
 
+## Autores
+- [Marcos Barros](https://github.com/MarcosBB)
+- [Gdiael Barros](https://github.com/gdiael)
