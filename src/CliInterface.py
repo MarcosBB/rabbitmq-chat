@@ -7,16 +7,19 @@ class CliInterface:
 
     def __print_screen(self, msg, input, cursor_pos):
         line = 0
-        title = " Python Chat - (RabbitMQ) "
+        title = "|    Python Chat - (RabbitMQ)    |"
         with self.__term.location(0, line):
             print(title)
-        line += 1
+            line += 1
         with self.__term.location(0, line):
-            print("=" * len(title))
-        line += 1
+            print("-" * len(title))
+            line += 1
         for str_line in self.cli_list:
             with self.__term.location(0, line):
                 print(f"{str_line:70}")
+                line += 1
+        with self.__term.location(0, line):
+            print("-" * len(title))
             line += 1
 
         with self.__term.location(0, line):
@@ -24,15 +27,15 @@ class CliInterface:
             f_input = f_input[:cursor_pos] + self.__term.reverse(f_input[cursor_pos]) + input[(cursor_pos+1):]
             print(f"{msg}: {f_input:}   ")
 
-    def start_input(self, input_message, updatelist, sendmessage):
+    def start_input(self, mode_args:dict):
         with self.__term.fullscreen(), self.__term.hidden_cursor():
-            while True:
+            while mode_args['mode'] != 'end':
                 text = ''
                 cursor_pos = 0
                 while True:
-                    updatelist(self.cli_list)
+                    mode_args[mode_args['mode']]['update'](self.cli_list)
 
-                    self.__print_screen(input_message, text, cursor_pos)
+                    self.__print_screen(mode_args[mode_args['mode']]['prompt'], text, cursor_pos)
 
                     with self.__term.cbreak():
                         key = self.__term.inkey(timeout=1)
@@ -57,7 +60,5 @@ class CliInterface:
                     elif key.code == self.__term.KEY_RIGHT:
                         if cursor_pos < len(text):
                             cursor_pos += 1
-                if text == '':
-                    break
-                else:
-                    sendmessage(text)
+                mode_args[mode_args['mode']]['send'](text)
+                print(self.__term.clear())
